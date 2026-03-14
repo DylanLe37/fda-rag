@@ -214,3 +214,4 @@ Scripts/.idea/
 __pycache__/
 *.pyc
 .chroma/
+data/
