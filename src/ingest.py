@@ -33,6 +33,7 @@ BATCH_SIZE      = 100       # openFDA max per request
 NUM_BATCHES     = 10        # 10 x 100 = 1,000 labels
 MAX_CHUNK_CHARS = 800       # soft ceiling per chunk
 CHUNK_OVERLAP   = 80        # overlap between chunks in same section
+MAX_DRUG_NAME_CHARS = 40    # most (full) drug names are ~35 characters
 
 SECTIONS = [
     "boxed_warning",
@@ -122,12 +123,52 @@ def split_section(text: str, max_chars: int = MAX_CHUNK_CHARS, overlap: int = CH
 
 
 def extract_drug_name(label: dict) -> str:
-    """Pull the most useful name from a label record."""
+    #get the drug name if possible from expected locations
     openfda = label.get("openfda", {})
     for field in ("brand_name", "generic_name", "substance_name"):
         names = openfda.get(field, [])
         if names:
             return names[0].title()
+
+    # spl_product_data_elements leads with the product name usually
+    spl = label.get("spl_product_data_elements", [])
+    if spl:
+        text = spl[0] if isinstance(spl, list) else spl
+        text = clean_text(text)
+        words = text.split()
+        seen = set()
+        name_words = []
+        for word in words[:8]:  # inspect first 8 words max
+            normalized = word.lower().strip(".,")
+            if normalized in seen:
+                break  # first repeat signals start of ingredient list
+            seen.add(normalized)
+            name_words.append(word)
+            if len(name_words) == 4:  # cap at 4 words
+                break
+        if name_words:
+            return " ".join(name_words)
+
+    ## May reintroduce these if needed, but they don't add so much signal generally
+    # #name may appear in purpose i.e. Minoxidil is used for...
+    # purpose = label.get("purpose", [])
+    # if purpose:
+    #     text = purpose[0] if isinstance(purpose, list) else purpose
+    #     text = clean_text(text)
+    #     if len(text) < MAX_DRUG_NAME_CHARS:  # only use if it looks like a name not a sentence
+    #         return text.title()
+    #
+    # # first word with caps first letter and lower case after could be name
+    # indications = label.get("indications_and_usage", [])
+    # if indications:
+    #     text = indications[0] if isinstance(indications, list) else indications
+    #     text = clean_text(text)
+    #     match = re.match(r"([A-Z][a-z]+(?:\s[A-Z][a-z]+){0,3})", text.strip())
+    #     if match:
+    #         candidate = match.group(1)
+    #         if candidate.lower() not in ("indications", "this", "the", "for"):
+    #             return candidate
+
     return "Unknown Drug"
 
 
@@ -222,13 +263,7 @@ def build_bm25_index(texts: list[str], metadatas: list[dict]) -> None:
     print(f"[ingest] BM25 index saved to {BM25_DIR}/")
 
 
-# ── Main ─────────────────────────────────────────────────────────────────────
-
 def main():
-    print("=" * 60)
-    print("FDA RAG — Ingestion Pipeline")
-    print("=" * 60)
-
     labels   = fetch_labels()
     texts, metadatas = chunk_labels(labels)
     build_chroma_index(texts, metadatas)
