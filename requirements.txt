@@ -1,0 +1,14 @@
+langchain
+langchain-community
+langchain-groq
+langgraph
+chromadb
+sentence-transformers
+rank-bm25
+ragas
+gradio
+huggingface-hub
+requests
+python-dotenv
+pandas
+tqdm
