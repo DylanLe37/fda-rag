@@ -215,3 +215,5 @@ __pycache__/
 *.pyc
 .chroma/
 data/
+eval/eval_results.json
+eval/eval_summary.json

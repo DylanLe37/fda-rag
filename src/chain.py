@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from datetime import datetime
+from datetime import datetime,timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -136,6 +136,7 @@ class RAGChain:
                 "rerank_score": round(chunk.get("rerank_score", 0), 4),
                 "rrf_score":    round(chunk.get("rrf_score", 0), 4),
                 "text_preview": chunk["text"][:150] + "...",
+                "full_text": chunk["text"],
             })
 
         return "\n\n---\n\n".join(context_parts), sources
@@ -166,7 +167,7 @@ class RAGChain:
 
 
     def query(self, question: str, run_grounding_check: bool = True) -> dict:
-        timestamp = datetime.utcnow().isoformat()
+        timestamp = datetime.now(timezone.utc).isoformat()
 
         # retrieve data
         retrieval_state = self.retriever.retrieve(question)
