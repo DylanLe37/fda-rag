@@ -13,7 +13,7 @@ pinned: false
 
 A retrieval-augmented generation (RAG) system for querying FDA-approved drug labels using natural language. Designed to support clinical prescribing decisions by surfacing contraindications, warnings, drug interactions, and dosing considerations from official FDA label content.
 
-**Live demo:** [Hugging Face Spaces](https://huggingface.co/spaces/DylanLe37/fda-rag)
+**Live demo:** [Hugging Face Spaces](https://huggingface.co/spaces/DylanLe37/RAG-Query-System)
 
 > **Disclaimer:** This system is a prototype for demonstration only. It is not intended for clinical use.
 
@@ -172,7 +172,7 @@ fda-rag/
 ### Installation
 
 ```bash
-git clone https://github.com/DylanLe37/fda-rag
+git clone https://github.com/DylanLe37/RAG-Query-System
 cd fda-rag
 python -m venv venv
 source venv/bin/activate
