@@ -162,7 +162,7 @@ fda-rag/
 
 ```bash
 git clone https://github.com/DylanLe37/RAG-Query-System
-cd fda-rag
+cd RAG-Query-System
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
