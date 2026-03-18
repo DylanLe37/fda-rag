@@ -208,4 +208,4 @@ python app.py
 python src/eval.py
 ```
 
-Runs all 34 questions through the pipeline and scores with RAGAS. Requires ~100,000 Groq tokens (free tier daily limit). Results cached to `eval/eval_results.json` so RAGAS scoring can be rerun independently.
+Runs all 34 questions through the pipeline and scores with RAGA. Results cached to `eval/eval_results.json` so RAGAS scoring can be rerun independently.
